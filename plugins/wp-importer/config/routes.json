@@ -1,0 +1,19 @@
+{
+  "routes": [
+
+    {
+      "method": "POST",
+      "path": "/wp-importer/import",
+      "handler": "WpImporter.import",
+      "config": {
+        "policies": [],
+        "prefix": false,
+        "description": "Upload a xml import file",
+        "tag": {
+          "plugin": "wp-importer",
+          "name": "File"
+        }
+      }
+    }
+  ]
+}

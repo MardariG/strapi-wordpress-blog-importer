@@ -1,0 +1,21 @@
+{
+  "connection": "default",
+  "collectionName": "components_blog_quotes",
+  "info": {
+    "name": "Quote",
+    "icon": "quote-right"
+  },
+  "options": {},
+  "attributes": {
+    "quote": {
+      "type": "text"
+    },
+    "author": {
+      "plugin": "users-permissions",
+      "model": "user"
+    },
+    "link_to_biography": {
+      "type": "string"
+    }
+  }
+}

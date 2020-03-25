@@ -1,0 +1,31 @@
+{
+  "name": "strapi-plugin-wp-importer",
+  "version": "0.0.0",
+  "description": "This is the description of the plugin.",
+  "strapi": {
+    "name": "Wordpress Importer",
+    "icon": "file-import",
+    "description": "Description of wp-importer plugin."
+  },
+  "dependencies": {
+    "file-type": "^14.1.4",
+    "xml2js": "^0.4.23"
+  },
+  "author": {
+    "name": "A Strapi developer",
+    "email": "",
+    "url": ""
+  },
+  "maintainers": [
+    {
+      "name": "A Strapi developer",
+      "email": "",
+      "url": ""
+    }
+  ],
+  "engines": {
+    "node": ">=10.0.0",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT"
+}

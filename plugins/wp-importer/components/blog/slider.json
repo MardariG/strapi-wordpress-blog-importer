@@ -1,0 +1,16 @@
+{
+  "connection": "default",
+  "collectionName": "components_blog_sliders",
+  "info": {
+    "name": "slider",
+    "icon": "arrows-alt-h"
+  },
+  "options": {},
+  "attributes": {
+    "Slide": {
+      "type": "component",
+      "repeatable": true,
+      "component": "nested.slide"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "connection": "default",
+  "collectionName": "components_blog_metas",
+  "info": {
+    "name": "Meta",
+    "icon": "address-card"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "value": {
+      "type": "text"
+    }
+  }
+}

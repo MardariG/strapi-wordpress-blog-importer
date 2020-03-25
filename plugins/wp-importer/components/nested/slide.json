@@ -1,0 +1,23 @@
+{
+  "connection": "default",
+  "collectionName": "components_nested_slides",
+  "info": {
+    "name": "Slide",
+    "icon": "caret-right"
+  },
+  "options": {},
+  "attributes": {
+    "picture": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "caption": {
+      "type": "text"
+    },
+    "link": {
+      "type": "string"
+    }
+  }
+}
