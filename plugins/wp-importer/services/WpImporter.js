@@ -148,9 +148,10 @@ class WpImporterService {
       });
     // pass the `buffers` variable to the service function upload which
     // returns a promise that gets resolved upon upload
+    // provider = aws-s3 || local
     return strapi.plugins.upload.services.upload.upload(
       buffers, {
-        provider: 'local',
+        provider: 'local', /* needs to be passed from client */
         enabled: true,
         sizeLimit: 10000000
       }
