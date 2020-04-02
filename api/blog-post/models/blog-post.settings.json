@@ -19,11 +19,6 @@
       "plugin": "upload",
       "required": false
     },
-    "author": {
-      "plugin": "users-permissions",
-      "model": "user",
-      "via": "blog_posts"
-    },
     "meta": {
       "type": "component",
       "repeatable": true,
@@ -51,6 +46,11 @@
     },
     "link": {
       "type": "string"
+    },
+    "author": {
+      "plugin": "users-permissions",
+      "model": "user",
+      "via": "blog_posts"
     }
   }
 }

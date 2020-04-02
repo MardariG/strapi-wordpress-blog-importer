@@ -59,6 +59,10 @@
     },
     "lastName": {
       "type": "string"
+    },
+    "blog_posts": {
+      "via": "author",
+      "collection": "blog-post"
     }
   }
 }
