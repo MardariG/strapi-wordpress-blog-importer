@@ -1,6 +1,5 @@
 {
   "routes": [
-
     {
       "method": "POST",
       "path": "/wp-importer/import",
