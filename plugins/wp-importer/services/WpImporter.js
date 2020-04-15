@@ -22,6 +22,26 @@ class WpImporterService {
     }
   }
 
+  async persistBlogAuthors(wpAuthors) {
+    const authors = [];
+    for (const author of wpAuthors) {
+      const {author_email, author_first_name, author_last_name, author_display_name} = author;
+      const username = author_display_name.split(' ').join('');
+      let user = await strapi.plugins['users-permissions'].services.user.fetch({username});
+      if (user) {
+        authors.push(user);
+      } else {
+        authors.push(await strapi.plugins['users-permissions'].services.user.add({
+          username,
+          email: author_email,
+          firstName: author_first_name,
+          lastName: author_last_name,
+        }));
+      }
+    }
+    return authors;
+  }
+
   async formatContentData(parsedJson2) {
     const blackListValues = ['[caption', '[/caption]'];
 
@@ -68,12 +88,23 @@ class WpImporterService {
       }
     }
 
+    function toIframe(obj) {
+      return {
+        __component: "blog.iframe",
+        src: obj.src.startsWith('//') ? `https:${obj.src}` : obj.src,
+        height: obj.height,
+        width: obj.width,
+        scrolling: obj.scrolling,
+        frameborder: obj.frameborder,
+        allowfullscreen: obj.allowfullscreen,
+      }
+    }
+
     const children = '$$';
     const content = [];
     let localContent = '';
     for (const obj of parsedJson2[children]) {
       const type = obj['#name'];
-
       if (type === 'img') {
         addContent();
         content.push(await this.toImage(obj))
@@ -83,9 +114,23 @@ class WpImporterService {
       } else if (type === 'blockquote') {
         addContent();
         content.push(toQuote(obj))
-      } else if (type === 'div') {
-        // Actually in my case this are not related posts, but latest 10 posts, no need to map them.
-      } else {
+      }
+      // else if (type === 'div') {
+      //   // Actually in my case this are not related posts, but latest 10 posts, no need to map them.
+      // }
+        else if (type === 'style') {
+        console.log(type);
+        console.log(obj);
+      }
+      else if (type === 'iframe') {
+        addContent();
+        content.push(toIframe(obj['$']))
+      }
+      // else if (type === 'table') {
+      //   console.log(type);
+      //   console.log(obj);
+      // }
+      else {
         localContent += formatChildren(obj, localContent);
       }
     }
@@ -96,7 +141,7 @@ class WpImporterService {
   async toImage(obj, imageClickLink) {
     return {
       __component: "nested.slide",
-      picture: await this.urlToFile(obj.$.src),
+      // picture: await this.urlToFile(obj.$.src),
       caption: obj.$.alt,
       link: imageClickLink
     }
@@ -153,9 +198,13 @@ class WpImporterService {
 
     // Retrieve provider configuration.
     const config = await uploadService.getConfig();
-    // config.path = '/318'
     return strapi.plugins.upload.services.upload.upload(
-      buffers, config
+      buffers.map(value => {
+        return {
+          ...value,
+          path: '318'
+        }
+      }), config
     );
   }
 

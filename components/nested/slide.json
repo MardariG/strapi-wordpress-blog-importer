@@ -2,8 +2,8 @@
   "connection": "default",
   "collectionName": "components_nested_slides",
   "info": {
-    "name": "Slide",
-    "icon": "caret-right"
+    "name": "Image",
+    "icon": "camera"
   },
   "options": {},
   "attributes": {

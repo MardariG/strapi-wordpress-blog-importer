@@ -13,9 +13,6 @@
     "author": {
       "plugin": "users-permissions",
       "model": "user"
-    },
-    "link_to_biography": {
-      "type": "string"
     }
   }
 }

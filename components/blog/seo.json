@@ -1,0 +1,20 @@
+{
+  "connection": "default",
+  "collectionName": "components_blog_seos",
+  "info": {
+    "name": "seo",
+    "icon": "atlas"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "keywords": {
+      "type": "string"
+    }
+  }
+}

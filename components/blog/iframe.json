@@ -1,0 +1,29 @@
+{
+  "connection": "default",
+  "collectionName": "components_blog_iframes",
+  "info": {
+    "name": "Iframe",
+    "icon": "ticket-alt"
+  },
+  "options": {},
+  "attributes": {
+    "src": {
+      "type": "string"
+    },
+    "height": {
+      "type": "string"
+    },
+    "width": {
+      "type": "string"
+    },
+    "scrolling": {
+      "type": "string"
+    },
+    "frameborder": {
+      "type": "string"
+    },
+    "allowfullscreen": {
+      "type": "string"
+    }
+  }
+}

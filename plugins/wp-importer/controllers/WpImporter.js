@@ -19,7 +19,8 @@ module.exports = {
   import: async (ctx) => {
     // Add your own logic here.
     // Extract optional relational data.
-    const {files = {}} = ctx.request.files || {};
+    const {files} = ctx.request.files;
+    if (!files || files.type !== 'text/xml') return;
     // Transform stream files to buffer
     const [buffer] = await strapi.plugins.upload.services.upload.bufferize(files);
     const xmlString = buffer.buffer.toString('utf8');
@@ -30,22 +31,9 @@ module.exports = {
         explicitArray: false
       });
     const data = parsedJson.rss;
-    const authors = [];
-    for (const author of data.channel.author) {
-      const {author_email, author_first_name, author_last_name, author_display_name} = author;
-      const username = author_display_name.split(' ').join('');
-      let user = await strapi.plugins['users-permissions'].services.user.fetch({username});
-      if (user) {
-        authors.push(user);
-      } else {
-        authors.push(await strapi.plugins['users-permissions'].services.user.add({
-          username,
-          email: author_email,
-          firstName: author_first_name,
-          lastName: author_last_name,
-        }));
-      }
-    }
+
+    const authors = await strapi.plugins['wp-importer'].services.wpimporter.persistBlogAuthors(data.channel.author);
+
     await Promise.all(data.channel.item
       .filter(p => p.post_type === 'post')
       .map(post => new Promise(async (resolve, reject) => {
@@ -53,12 +41,15 @@ module.exports = {
         const postData = {
           title,
           content: [],
-          excerpt: encoded[1],
           slug,
           link,
           created_at: pubDate,
           author: authors.find(value => value.email === creator),
           status: status === 'publish' ? 'PUBLISHED' : 'DRAFT',
+          seo: {
+            title,
+            description: encoded[1].replace(/<\/?[^>]+(>|$)/g, '')
+          }
         };
 
         const ignoreAttributes = ['class', 'style'];
@@ -69,8 +60,8 @@ module.exports = {
           }
           return value
         }
-        function attributeNameToLowerCase( name) {
 
+        function attributeNameToLowerCase(name) {
           return name.toLowerCase()
         }
 
@@ -96,7 +87,11 @@ module.exports = {
           if (postmeta && postmeta.meta_key === '_thumbnail_id' && postmeta.meta_value) {
             const attachment = data.channel.item.find(p => p.post_type === 'attachment' && p.post_id === postmeta.meta_value);
             if (attachment) {
-              postData.cover = await strapi.plugins['wp-importer'].services.wpimporter.urlToFile(attachment.attachment_url)
+              postData.cover = {
+                picture: await strapi.plugins['wp-importer'].services.wpimporter.urlToFile(attachment.attachment_url),
+                caption: encoded[1],
+                link
+              }
             }
           }
 

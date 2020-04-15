@@ -13,12 +13,6 @@
     "title": {
       "type": "string"
     },
-    "cover": {
-      "model": "file",
-      "via": "related",
-      "plugin": "upload",
-      "required": false
-    },
     "meta": {
       "type": "component",
       "repeatable": true,
@@ -30,7 +24,8 @@
         "blog.quote",
         "blog.slider",
         "blog.rich-text",
-        "nested.slide"
+        "nested.slide",
+        "blog.iframe"
       ]
     },
     "status": {
@@ -41,9 +36,6 @@
       ],
       "default": "DRAFT"
     },
-    "excerpt": {
-      "type": "richtext"
-    },
     "link": {
       "type": "string"
     },
@@ -51,6 +43,19 @@
       "plugin": "users-permissions",
       "model": "user",
       "via": "blog_posts"
+    },
+    "cover": {
+      "type": "component",
+      "repeatable": false,
+      "component": "nested.slide"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blog.seo"
+    },
+    "created_at": {
+      "type": "datetime"
     }
   }
 }
