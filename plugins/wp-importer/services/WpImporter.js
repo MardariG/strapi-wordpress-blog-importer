@@ -115,20 +115,19 @@ class WpImporterService {
         addContent();
         content.push(toQuote(obj))
       }
-      // else if (type === 'div') {
-      //   // Actually in my case this are not related posts, but latest 10 posts, no need to map them.
+        // else if (type === 'div') {
+        //   // Actually in my case this are not related posts, but latest 10 posts, no need to map them.
       // }
-        else if (type === 'style') {
+      else if (type === 'style') {
         console.log(type);
         console.log(obj);
-      }
-      else if (type === 'iframe') {
+      } else if (type === 'iframe') {
         addContent();
         content.push(toIframe(obj['$']))
       }
-      // else if (type === 'table') {
-      //   console.log(type);
-      //   console.log(obj);
+        // else if (type === 'table') {
+        //   console.log(type);
+        //   console.log(obj);
       // }
       else {
         localContent += formatChildren(obj, localContent);
@@ -141,7 +140,7 @@ class WpImporterService {
   async toImage(obj, imageClickLink) {
     return {
       __component: "nested.slide",
-      // picture: await this.urlToFile(obj.$.src),
+      picture: await this.urlToFile(obj.$.src),
       caption: obj.$.alt,
       link: imageClickLink
     }
