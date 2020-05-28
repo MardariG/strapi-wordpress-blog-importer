@@ -38,6 +38,7 @@ module.exports = {
       .filter(p => p.post_type === 'post')
       .map(post => new Promise(async (resolve, reject) => {
         const {title, slug, encoded, creator, status, link, postmeta, post_date_gmt} = post;
+
         const postData = {
           title,
           content: [],
@@ -53,24 +54,28 @@ module.exports = {
           }
         };
 
-        const ignoreAttributes = ['class', 'style'];
-
-        function skipAttributes(value, name) {
-          if (ignoreAttributes.includes(name)) {
-            return undefined;
-          }
-          return value
-        }
-
         function attributeNameToLowerCase(name) {
           return name.toLowerCase()
         }
 
-
+        const processedEncoded = encoded[0]
+          .replace(/<div class="summary-item-list-container sqs-gallery-container">([\S\s]*)/gm, "")
+          .replace(/<div([\S\s]*?)>/gm, "")
+          .replace(/<\/div>/gm, "")
+          .replace(/<figure([\S\s]*?)>/gm, "")
+          .replace(/<\/figure>/gm, "")
+          .replace(/class="([\S\s]*?)"/gm, "")
+          .replace(/<noscript>([\S\s]*?)<\/noscript>/gm, "")
+          .replace(/data-image="([\S\s]*?)"/gm, "")
+          .replace(/data-test="([\S\s]*?)"/gm, "")
+          .replace(/style="([\S\s]*?)"/gm, "");
+        // console.log(processedEncoded);
         try {
-          const parsedJson2 = await xml2js.parseStringPromise(`<div> ${encoded[0]} </div>`,
+          const parsedJson2 = await xml2js.parseStringPromise(`<div> ${processedEncoded} </div>`,
             {
-              attrValueProcessors: [skipAttributes],
+              // tagNameProcessors: [tagNameProcessors],
+              // valueProcessors : [tagValueProcessors],
+              // attrValueProcessors: [skipAttributes],
               attrNameProcessors: [attributeNameToLowerCase],
               explicitRoot: false,
               explicitArray: false,
@@ -80,13 +85,15 @@ module.exports = {
               charsAsChildren: true,
               explicitChildren: true,
               preserveChildrenOrder: true,
-              strict: false
+              strict: false,
+              headless: true
             });
 
           postData.content = await strapi.plugins['wp-importer'].services.wpimporter.formatContentData(parsedJson2);
 
           if (postmeta && postmeta.meta_key === '_thumbnail_id' && postmeta.meta_value) {
             const attachment = data.channel.item.find(p => p.post_type === 'attachment' && p.post_id === postmeta.meta_value);
+            // console.log(attachment);
             if (attachment) {
               postData.cover = {
                 picture: await strapi.plugins['wp-importer'].services.wpimporter.urlToFile(attachment.attachment_url),

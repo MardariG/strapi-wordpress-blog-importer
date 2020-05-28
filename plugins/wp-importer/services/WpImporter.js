@@ -43,6 +43,7 @@ class WpImporterService {
   }
 
   async formatContentData(parsedJson2) {
+
     const blackListValues = ['[caption', '[/caption]'];
 
     function isAllowedValue(value) {
@@ -103,7 +104,7 @@ class WpImporterService {
     const children = '$$';
     const content = [];
     let localContent = '';
-    if (parsedJson2[children])
+    if (parsedJson2[children]) {
       for (const obj of parsedJson2[children]) {
         const type = obj['#name'];
         if (type === 'img') {
@@ -115,33 +116,21 @@ class WpImporterService {
         } else if (type === 'blockquote') {
           addContent();
           content.push(toQuote(obj))
-        }
-          // else if (type === 'div') {
-          //   // Actually in my case this are not related posts, but latest 10 posts, no need to map them.
-        // }
-        else if (type === 'style') {
-          console.log(type);
-          console.log(obj);
         } else if (type === 'iframe') {
           addContent();
           content.push(toIframe(obj['$']))
-        }
-          // else if (type === 'table') {
-          //   console.log(type);
-          //   console.log(obj);
-        // }
-        else {
+        } else {
           localContent += formatChildren(obj, localContent);
         }
       }
-
+    }
     return Promise.all(content);
   }
 
   async toImage(obj, imageClickLink) {
     return {
       __component: "nested.slide",
-      picture: await this.urlToFile(obj.$.src),
+      picture: await this.urlToFile(obj.$.src || obj.$['data-src']),
       caption: obj.$.alt,
       link: imageClickLink
     }
