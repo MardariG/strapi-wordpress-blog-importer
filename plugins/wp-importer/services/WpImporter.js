@@ -103,36 +103,37 @@ class WpImporterService {
     const children = '$$';
     const content = [];
     let localContent = '';
-    for (const obj of parsedJson2[children]) {
-      const type = obj['#name'];
-      if (type === 'img') {
-        addContent();
-        content.push(await this.toImage(obj))
-      } else if (type === 'a' && obj.img) { /* a tag has nested image */
-        addContent();
-        content.push(await this.toImage(obj.img, obj.$.href))
-      } else if (type === 'blockquote') {
-        addContent();
-        content.push(toQuote(obj))
+    if (parsedJson2[children])
+      for (const obj of parsedJson2[children]) {
+        const type = obj['#name'];
+        if (type === 'img') {
+          addContent();
+          content.push(await this.toImage(obj))
+        } else if (type === 'a' && obj.img) { /* a tag has nested image */
+          addContent();
+          content.push(await this.toImage(obj.img, obj.$.href))
+        } else if (type === 'blockquote') {
+          addContent();
+          content.push(toQuote(obj))
+        }
+          // else if (type === 'div') {
+          //   // Actually in my case this are not related posts, but latest 10 posts, no need to map them.
+        // }
+        else if (type === 'style') {
+          console.log(type);
+          console.log(obj);
+        } else if (type === 'iframe') {
+          addContent();
+          content.push(toIframe(obj['$']))
+        }
+          // else if (type === 'table') {
+          //   console.log(type);
+          //   console.log(obj);
+        // }
+        else {
+          localContent += formatChildren(obj, localContent);
+        }
       }
-        // else if (type === 'div') {
-        //   // Actually in my case this are not related posts, but latest 10 posts, no need to map them.
-      // }
-      else if (type === 'style') {
-        console.log(type);
-        console.log(obj);
-      } else if (type === 'iframe') {
-        addContent();
-        content.push(toIframe(obj['$']))
-      }
-        // else if (type === 'table') {
-        //   console.log(type);
-        //   console.log(obj);
-      // }
-      else {
-        localContent += formatChildren(obj, localContent);
-      }
-    }
 
     return Promise.all(content);
   }

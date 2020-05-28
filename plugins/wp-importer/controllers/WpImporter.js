@@ -37,13 +37,14 @@ module.exports = {
     await Promise.all(data.channel.item
       .filter(p => p.post_type === 'post')
       .map(post => new Promise(async (resolve, reject) => {
-        const {title, slug, encoded, pubDate, creator, status, link, postmeta} = post;
+        const {title, slug, encoded, creator, status, link, postmeta, post_date_gmt} = post;
         const postData = {
           title,
           content: [],
           slug,
           link,
-          created_at: pubDate,
+          // created_at: pubDate,
+          published_at: post_date_gmt,
           author: authors.find(value => value.email === creator),
           status: status === 'publish' ? 'PUBLISHED' : 'DRAFT',
           seo: {

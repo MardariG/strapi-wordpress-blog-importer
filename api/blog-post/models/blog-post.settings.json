@@ -54,8 +54,9 @@
       "repeatable": false,
       "component": "blog.seo"
     },
-    "created_at": {
-      "type": "datetime"
+    "published_at": {
+      "type": "datetime",
+      "required": false
     }
   }
 }
