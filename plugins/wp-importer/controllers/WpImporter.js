@@ -35,9 +35,9 @@ module.exports = {
     const authors = await strapi.plugins['wp-importer'].services.wpimporter.persistBlogAuthors(data.channel.author);
 
     await Promise.all(data.channel.item
-      .filter(p => p.post_type === 'post')
+      .filter(p => p.post_type === 'post' || p.post_type === 'news')
       .map(post => new Promise(async (resolve, reject) => {
-        const {title, slug, encoded, creator, status, link, postmeta, post_date_gmt, post_type, comment_status} = post;
+        const {title, slug, encoded, creator, status, link, postmeta, post_date_gmt, post_type} = post;
         const postData = {
           title,
           content: [],
