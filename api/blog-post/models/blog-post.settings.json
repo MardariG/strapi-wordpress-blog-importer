@@ -57,6 +57,14 @@
     "published_at": {
       "type": "datetime",
       "required": false
+    },
+    "post_type": {
+      "type": "enumeration",
+      "enum": [
+        "BLOG",
+        "NEWS"
+      ],
+      "default": "BLOG"
     }
   }
 }

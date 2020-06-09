@@ -37,15 +37,14 @@ module.exports = {
     await Promise.all(data.channel.item
       .filter(p => p.post_type === 'post')
       .map(post => new Promise(async (resolve, reject) => {
-        const {title, slug, encoded, creator, status, link, postmeta, post_date_gmt} = post;
-
+        const {title, slug, encoded, creator, status, link, postmeta, post_date_gmt, post_type, comment_status} = post;
         const postData = {
           title,
           content: [],
           slug,
           link,
-          // created_at: pubDate,
           published_at: post_date_gmt,
+          post_type: post_type === 'post' ? 'BLOG' : 'NEWS', // HACK
           author: authors.find(value => value.email === creator),
           status: status === 'publish' ? 'PUBLISHED' : 'DRAFT',
           seo: {
@@ -103,10 +102,15 @@ module.exports = {
             }
           }
 
+
           await strapi.services['blog-post'].create(postData);
           resolve()
         } catch (err) {
           console.log(err);
+          console.log('\n');
+          console.log('------------------------------------------------------------------ ');
+          console.log('\n');
+          console.log(postData);
           reject(err)
         }
       })));
