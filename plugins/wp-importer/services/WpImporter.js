@@ -110,9 +110,13 @@ class WpImporterService {
         if (type === 'img') {
           addContent();
           content.push(await this.toImage(obj))
-        } else if (type === 'a' && obj.img) { /* a tag has nested image */
-          addContent();
-          content.push(await this.toImage(obj.img, obj.$.href))
+        } else if (type === 'a') { /* a tag has nested image */
+          if (obj.img) {
+            addContent();
+            content.push(await this.toImage(obj.img, obj.$.href))
+          } else {
+            addContent();
+          }
         } else if (type === 'blockquote') {
           addContent();
           content.push(toQuote(obj))
