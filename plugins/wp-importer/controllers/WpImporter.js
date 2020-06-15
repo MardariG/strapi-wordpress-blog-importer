@@ -6,6 +6,7 @@
  * @description: A set of functions called "actions" of the `wp-importer` plugin.
  */
 const xml2js = require('xml2js');
+const rimraf = require('rimraf');
 const stripPrefix = xml2js.processors.stripPrefix;
 
 module.exports = {
@@ -114,7 +115,7 @@ module.exports = {
           reject(err)
         }
       })));
-
+    await rimraf.sync('./public/uploads/tmp/*');
     // Send 200 `ok`
     ctx.send({message: 'ok'});
   }

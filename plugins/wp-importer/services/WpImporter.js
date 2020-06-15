@@ -105,17 +105,15 @@ class WpImporterService {
     const content = [];
     let localContent = '';
     if (parsedJson2[children]) {
-      for (const obj of parsedJson2[children]) {
+      for (const [i, obj] of parsedJson2[children].entries()) {
         const type = obj['#name'];
         if (type === 'img') {
           addContent();
           content.push(await this.toImage(obj))
         } else if (type === 'a') { /* a tag has nested image */
+          addContent();
           if (obj.img) {
-            addContent();
             content.push(await this.toImage(obj.img, obj.$.href))
-          } else {
-            addContent();
           }
         } else if (type === 'blockquote') {
           addContent();
@@ -125,6 +123,9 @@ class WpImporterService {
           content.push(toIframe(obj['$']))
         } else {
           localContent += formatChildren(obj, localContent);
+        }
+        if (i === parsedJson2[children].length - 1) {
+          addContent();
         }
       }
     }
@@ -141,8 +142,8 @@ class WpImporterService {
   }
 
   async urlToFile(url) {
-    const downloaded = await this.download(url);
-    return this.upload(downloaded);
+    const [downloaded, name] = await this.download(url);
+    return this.upload(downloaded, name);
   }
 
   async download(url) {
@@ -150,6 +151,7 @@ class WpImporterService {
     url = `${parsedUrl.protocol}//${parsedUrl.host}${parsedUrl.pathname}`;
     // get the filename such as `image01.jpg`
     const name = Math.random().toString(36).substring(2, 15) + path.basename(url);
+    // const name = path.basename(url);
     // we need to set a file path on our host where the image will be
     const filePath = `${tempFolder}/${name}`;
 
@@ -163,18 +165,25 @@ class WpImporterService {
     // return a new Promise that resolves when the event writeStream.on is emitted. Resolves the file path
     return new Promise((resolve, reject) => {
       writeStream.on('finish', () => {
-        resolve(filePath)
+        resolve([filePath, path.basename(url)])
       });
       writeStream.on('error', reject);
     });
   }
 
-  async upload(imgPath) {
+  async upload(imgPath, name) {
     // name of the file like image01.jpg
-    const name = path.basename(imgPath);
+    // const name = path.basename(imgPath);
     // read contents of file into a Buffer
     const buffer = await fsPromise.readFile(imgPath);
     const {mime, ext} = await FileType.fromBuffer(buffer); /* some image links do not have an extension */
+
+    // const fileAlreadyExists = await strapi.query('file', 'upload').findOne({
+    //   name: name + '.' + ext,
+    // });
+    // if (fileAlreadyExists) {
+    //   return fileAlreadyExists;
+    // }
     // get the buffersize using service function from upload plugin
     const buffers = await
       strapi.plugins.upload.services.upload.bufferize({
@@ -191,6 +200,10 @@ class WpImporterService {
 
     // Retrieve provider configuration.
     const config = await uploadService.getConfig();
+
+    // const found = strapi.plugins.upload.services.find();
+    // console.log('found == = == === ==  ', response2);
+    // console.log(strapi.plugins.upload.services);
     return strapi.plugins.upload.services.upload.upload(
       buffers.map(value => {
         return {
