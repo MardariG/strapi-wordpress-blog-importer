@@ -7,6 +7,7 @@
  */
 const xml2js = require('xml2js');
 const rimraf = require('rimraf');
+const crypto = require('crypto');
 const stripPrefix = xml2js.processors.stripPrefix;
 
 module.exports = {
@@ -89,7 +90,7 @@ module.exports = {
               headless: true
             });
 
-          postData.content = await strapi.plugins['wp-importer'].services.wpimporter.formatContentData(parsedJson2);
+          postData.content = await strapi.plugins['wp-importer'].services.wpimporter.formatContentData(parsedJson2, crypto.createHash('md5').update(title === undefined ? 'no title post' : title).digest("hex"));
 
           if (postmeta && postmeta.meta_key === '_thumbnail_id' && postmeta.meta_value) {
             const attachment = data.channel.item.find(p => p.post_type === 'attachment' && p.post_id === postmeta.meta_value);

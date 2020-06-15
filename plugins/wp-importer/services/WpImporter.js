@@ -42,7 +42,7 @@ class WpImporterService {
     return authors;
   }
 
-  async formatContentData(parsedJson2) {
+  async formatContentData(parsedJson2, postTitle) {
 
     const blackListValues = ['[caption', '[/caption]'];
 
@@ -109,11 +109,11 @@ class WpImporterService {
         const type = obj['#name'];
         if (type === 'img') {
           addContent();
-          content.push(await this.toImage(obj))
+          content.push(await this.toImage(postTitle, obj))
         } else if (type === 'a') { /* a tag has nested image */
           addContent();
           if (obj.img) {
-            content.push(await this.toImage(obj.img, obj.$.href))
+            content.push(await this.toImage(postTitle, obj.img, obj.$.href))
           }
         } else if (type === 'blockquote') {
           addContent();
@@ -132,25 +132,27 @@ class WpImporterService {
     return Promise.all(content);
   }
 
-  async toImage(obj, imageClickLink) {
+  async toImage(postTitle, obj, imageClickLink) {
     return {
       __component: "nested.slide",
-      picture: await this.urlToFile(obj.$.src || obj.$['data-src']),
+      picture: await this.urlToFile(obj.$.src || obj.$['data-src'], postTitle),
       caption: obj.$.alt,
       link: imageClickLink
     }
   }
 
-  async urlToFile(url) {
-    const [downloaded, name] = await this.download(url);
-    return this.upload(downloaded, name);
+  async urlToFile(url, postTitle) {
+    // console.log('postTitlepostTitlepostTitle');
+    // console.log(postTitle);
+    const [downloaded, name] = await this.download(url, postTitle);
+    return this.upload(downloaded, name, postTitle);
   }
 
-  async download(url) {
+  async download(url, postTitle) {
     const parsedUrl = urlParse.parse(url);
     url = `${parsedUrl.protocol}//${parsedUrl.host}${parsedUrl.pathname}`;
     // get the filename such as `image01.jpg`
-    const name = Math.random().toString(36).substring(2, 15) + path.basename(url);
+    const name = postTitle + path.basename(url);
     // const name = path.basename(url);
     // we need to set a file path on our host where the image will be
     const filePath = `${tempFolder}/${name}`;
@@ -165,25 +167,27 @@ class WpImporterService {
     // return a new Promise that resolves when the event writeStream.on is emitted. Resolves the file path
     return new Promise((resolve, reject) => {
       writeStream.on('finish', () => {
-        resolve([filePath, path.basename(url)])
+        resolve([filePath, name])
       });
       writeStream.on('error', reject);
     });
   }
 
   async upload(imgPath, name) {
+    // console.log('namenamenamenamenamenamenamenamenamenamenamenamenamenamenamenamenamename');
+    // console.log(name);
     // name of the file like image01.jpg
     // const name = path.basename(imgPath);
     // read contents of file into a Buffer
     const buffer = await fsPromise.readFile(imgPath);
     const {mime, ext} = await FileType.fromBuffer(buffer); /* some image links do not have an extension */
 
-    // const fileAlreadyExists = await strapi.query('file', 'upload').findOne({
-    //   name: name + '.' + ext,
-    // });
-    // if (fileAlreadyExists) {
-    //   return fileAlreadyExists;
-    // }
+    const fileAlreadyExists = await strapi.query('file', 'upload').findOne({
+      name: name + '.' + ext,
+    });
+    if (fileAlreadyExists) {
+      return fileAlreadyExists;
+    }
     // get the buffersize using service function from upload plugin
     const buffers = await
       strapi.plugins.upload.services.upload.bufferize({
