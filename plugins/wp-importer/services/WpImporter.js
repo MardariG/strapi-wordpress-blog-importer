@@ -180,7 +180,16 @@ class WpImporterService {
     // const name = path.basename(imgPath);
     // read contents of file into a Buffer
     const buffer = await fsPromise.readFile(imgPath);
-    const {mime, ext} = await FileType.fromBuffer(buffer); /* some image links do not have an extension */
+    const froBuffer = await FileType.fromBuffer(buffer); /* some image links do not have an extension */
+
+    if (!froBuffer) {
+      console.log('Image path not found!....');
+      console.log(imgPath);
+      console.log(name);
+      return undefined;
+    }
+
+    const {mime, ext} = froBuffer;
 
     const fileAlreadyExists = await strapi.query('file', 'upload').findOne({
       name: name + '.' + ext,
