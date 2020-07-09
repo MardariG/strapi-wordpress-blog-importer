@@ -14,13 +14,15 @@ const FileType = require('file-type');
 
 const tempFolder = './public/uploads/tmp/';
 
-const checkExist = setInterval(function() {
+const checkExist = setInterval(function () {
   if (Object.keys(strapi.plugins).length && strapi.plugins.upload) {
     console.log("Exists!");
-    const origParseFloat = strapi.plugins.upload.controllers.upload.upload;
-    strapi.plugins.upload.controllers.upload.upload = function(ctx) {
-      ctx.request.body.path = '318'
-      return origParseFloat(ctx);
+    const origUploadService = strapi.plugins.upload.services.upload.upload;
+    strapi.plugins.upload.services.upload.upload = function () {
+      arguments[0] = arguments[0].map(value => {
+        return {...value, path: '318'}
+      })
+      return origUploadService.apply(this, arguments);
     }
     clearInterval(checkExist);
   }
