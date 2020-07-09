@@ -14,6 +14,18 @@ const FileType = require('file-type');
 
 const tempFolder = './public/uploads/tmp/';
 
+const checkExist = setInterval(function() {
+  if (Object.keys(strapi.plugins).length && strapi.plugins.upload) {
+    console.log("Exists!");
+    const origParseFloat = strapi.plugins.upload.controllers.upload.upload;
+    strapi.plugins.upload.controllers.upload.upload = function(ctx) {
+      ctx.request.body.path = '318'
+      return origParseFloat(ctx);
+    }
+    clearInterval(checkExist);
+  }
+}, 100);
+
 class WpImporterService {
 
   constructor() {
@@ -174,10 +186,7 @@ class WpImporterService {
   }
 
   async upload(imgPath, name) {
-    // console.log('namenamenamenamenamenamenamenamenamenamenamenamenamenamenamenamenamename');
-    // console.log(name);
     // name of the file like image01.jpg
-    // const name = path.basename(imgPath);
     // read contents of file into a Buffer
     const buffer = await fsPromise.readFile(imgPath);
     const froBuffer = await FileType.fromBuffer(buffer); /* some image links do not have an extension */
