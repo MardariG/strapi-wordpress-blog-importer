@@ -37,7 +37,8 @@
       "default": "DRAFT"
     },
     "link": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     },
     "author": {
       "plugin": "users-permissions",
