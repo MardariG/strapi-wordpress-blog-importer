@@ -25,7 +25,8 @@
         "blog.slider",
         "blog.rich-text",
         "nested.slide",
-        "blog.iframe"
+        "blog.iframe",
+        "blog.video"
       ]
     },
     "status": {

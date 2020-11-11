@@ -1,0 +1,23 @@
+{
+  "connection": "default",
+  "collectionName": "components_blog_videos",
+  "info": {
+    "name": "video",
+    "icon": "photo-video"
+  },
+  "options": {},
+  "attributes": {
+    "videoUrl": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    },
+    "imagePreviewUrl": {
+      "model": "file",
+      "via": "related",
+      "plugin": "upload",
+      "required": false
+    }
+  }
+}
