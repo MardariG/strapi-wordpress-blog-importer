@@ -14,19 +14,20 @@ const FileType = require('file-type');
 
 const tempFolder = './public/uploads/tmp/';
 
-const checkExist = setInterval(function () {
-  if (Object.keys(strapi.plugins).length && strapi.plugins.upload) {
-    console.log("Exists!");
-    const origUploadService = strapi.plugins.upload.services.upload.upload;
-    strapi.plugins.upload.services.upload.upload = function () {
-      arguments[0] = arguments[0].map(value => {
-        return {...value, path: '318'}
-      })
-      return origUploadService.apply(this, arguments);
-    }
-    clearInterval(checkExist);
-  }
-}, 100);
+// const checkExist = setInterval(function () {
+//   if (Object.keys(strapi.plugins).length && strapi.plugins.upload) {
+//     console.log("Exists!");
+//     const origUploadService = strapi.plugins.upload.services.upload.upload;
+//     strapi.plugins.upload.services.upload.upload = function () {
+//       console.log(arguments);
+//       arguments[0] = arguments[0].map(value => {
+//         return {...value, path: '318'}
+//       })
+//       return origUploadService.apply(this, arguments);
+//     }
+//     clearInterval(checkExist);
+//   }
+// }, 100);
 
 class WpImporterService {
 

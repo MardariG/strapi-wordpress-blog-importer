@@ -110,3 +110,4 @@ coverage
 exports
 .cache
 build
+/extensions/upload/config/settings.json
